@@ -1,0 +1,38 @@
+wordpress:
+    image: wordpress
+    ports:
+     - 80:80
+     - 443:443
+    volumes_from:
+      - wordpress-data
+    links:
+     - mariadb:mysql
+    environment:
+      - WORDPRESS_TABLE_PREFIX=db_
+      - MYSQL_ROOT_PASSWORD=MyPassword
+    hostname: cloud
+    domainname: wordpress.local
+    restart: always
+
+mariadb:
+    image: mariadb
+    hostname: mariadb
+    environment:
+      - MYSQL_ROOT_PASSWORD=MyPassword
+    volumes_from:
+      - mariadb-data
+    restart: always
+
+mariadb-data:
+    image: busybox
+    hostname: mariadb-data
+    command: /bin/sh -c "/bin/chown -R 999 /var/lib/mysql"
+    volumes:
+      - /var/lib/mysql
+
+wordpress-data:
+    image: busybox
+    hostname: wordpress-data
+    command: /bin/sh -c "/bin/chown -R 33 /var/www/html"
+    volumes:
+      - /var/www/html
